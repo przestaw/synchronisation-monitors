@@ -33,7 +33,6 @@ public:
     void put_car(Car_Type &next_car);
 
     bool is_n_full();
-    boost::fdostream get_str(){return my_stream;}
 };
 
 #endif //COCURRENT_BUFFER_H
