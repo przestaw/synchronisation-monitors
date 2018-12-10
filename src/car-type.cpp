@@ -23,17 +23,17 @@ Car_Type::Car_Type(int seed1, int seed2, int seed3)
     }
 }
 
-bool Car_Type::is_car()
+bool Car_Type::is_car() const
 {
     return (prio >= 0 && dest >= 0);
 }
 
-bool Car_Type::is_prio()
+bool Car_Type::is_prio() const
 {
     return (prio > 0);
 }
 
-int Car_Type::get_dest()
+int Car_Type::get_dest() const
 {
     return dest;
 }

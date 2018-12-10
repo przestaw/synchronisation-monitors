@@ -13,9 +13,9 @@ public:
     Car_Type(int seed1, int seed2, int seed3);
     Car_Type();
 
-    bool is_car();
-    bool is_prio();
-    int get_dest();
+    bool is_car() const;
+    bool is_prio() const;
+    int get_dest() const;
 };
 
 #endif //COCURRENT_CAR_TYPE_H

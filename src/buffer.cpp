@@ -20,7 +20,7 @@ Buffer::Buffer(Car_Type first_car) : Buffer()
     put_car(first_car);
 }
 
-Car_Type Buffer::get_car()
+Car_Type Buffer::get_car() //NOPRINT
 {
     std::lock_guard<std::mutex> lockGuard(my_mutex);
     Car_Type car;
@@ -46,10 +46,32 @@ Car_Type Buffer::get_car(Car_Type *approching)
     {
         car = *approching;
         *approching = Car_Type();
+        my_stream << "       ";
+        this->print();
+        if(car.is_prio())
+        {
+            my_stream << " <:P:> *appeared*" << std::endl;
+        }
+        else
+        {
+            my_stream << "       *none*" << std::endl;
+        }
     }else
     {
         car = car_buf[begin];
         car_buf[begin] = Car_Type();
+
+        my_stream << "       ";
+        this->print();
+        if(car.is_prio())
+        {
+            my_stream << " -> [P]" << std::endl;
+        }
+        else
+        {
+            my_stream << " -> [" << car.get_dest() << "]" << std::endl;
+        }
+
         begin = (begin + 1)% BUF_SIZE; //+1
         --size;
         buf_n_full.notify_one();
@@ -57,7 +79,7 @@ Car_Type Buffer::get_car(Car_Type *approching)
     return car;
 }
 
-Car_Type Buffer::get_car(Car_Type *approching, int nr)
+Car_Type Buffer::get_car(Car_Type *approching, int nr) //NOPRINT
 {
     std::lock_guard<std::mutex> lockGuard(my_mutex);
     Car_Type car;
@@ -88,11 +110,16 @@ void Buffer::put_car(Car_Type &next_car)
     {
         begin = (begin + 9)% BUF_SIZE; //-1
         car_buf[begin] = next_car;
+        my_stream << "[P]*-> ";
+
     }else
     {
         car_buf[end] = next_car;
         end = (end + 1)% BUF_SIZE; //+1
+        my_stream << "[" << next_car.get_dest() << "] -> ";
     }
+    this->print();
+    my_stream << std::endl;
 }
 
 void Buffer::print() 
@@ -109,7 +136,7 @@ void Buffer::print()
             } 
             else
             {
-                my_stream << "[%d] ";
+                my_stream << "[" << car_buf[i].get_dest() << "] ";
             }
         }
         else
