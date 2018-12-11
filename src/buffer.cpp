@@ -267,7 +267,7 @@ void Buffer::put_car(Car_Type &next_car)
 
     if(next_car.is_prio())//if priority move to the begining
     {
-        begin = (begin + 9)% BUF_SIZE; //-1
+        begin = (begin + BUF_SIZE -1)% BUF_SIZE; //-1
         car_buf[begin] = next_car;
         my_stream << "[P]*-> ";
 
@@ -283,7 +283,7 @@ void Buffer::put_car(Car_Type &next_car)
 
 void Buffer::print() 
 {
-    int i = (begin + 9 )% BUF_SIZE;
+    int i = (begin + BUF_SIZE -1 )% BUF_SIZE;
     my_stream << "| "; 
     for(int j = 0; j < 10; j++)
     {

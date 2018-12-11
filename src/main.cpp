@@ -19,72 +19,18 @@ int global;
 
 int main()
 {
-/*
- * We need to obtain 3 separate slave
- * terminals to see how simulation goes on
- *
- * Each slave will introduce himself with Hello World
- */
-/*
-    boost::fdostream slave[3]; //terminal streams
-    for(auto & slv : slave)
-    {
-       slv = get_ptmx_stream();
-       slv << "Hello World : from slave ";
-    }
-*/
     srand(time(NULL));
-    //boost::fdostream slave1(get_ptmx());
-    //boost::fdostream slave2(get_ptmx());
-    //boost::fdostream slave3(get_ptmx());
     std::thread workers[3];
-/*
-    std::thread new_thread([]{
-        Car_Type test;
-        for(int i = 0; i < 100; i++)
-        {
-            std::cout << test.is_car() << "  " << test.get_dest() << std::endl;
-            test = Car_Type(rand(),rand(),rand());
-            global = i;
-            std::cout << global << std::endl;
-        }
-    });
-    new_thread.join();
 
-    workers[1] = std::thread([](int nr = 1){
-        Car_Type new_car;
-        Car_Type current;
-        while(!my_exit)
-        {
-            if(!new_car.is_car())
-            {
-                do{
-                    new_car = Car_Type(rand(),rand(),rand());
-                }while(new_car.get_dest() == nr);
-            }
-
-            current = buffers[nr-1].get_car(&new_car);
-
-            if(current.get_dest() == nr)
-            {
-                current = Car_Type();
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            if(current.is_car())
-            {
-                buffers[nr%3].put_car(current);
-            }
-        }
-    });
-    workers[1].join();
-    */
     auto input = []{
         int a;
-        do{
+        while(!(std::cin >> a))
+        {
             std::cin.clear();
             std::cin.sync();
-            std::cin >> a;
-        }while(std::cin.fail());
+            std::cin.ignore(100, '\n');
+            std::cout << "Wrong input\n";
+        }
         return a;
     };
 
