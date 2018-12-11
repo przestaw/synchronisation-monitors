@@ -90,11 +90,13 @@ namespace boost {
         fdostream (int fd) : std::ostream(0), buf(fd) {
             rdbuf(&buf);
         }
+        /*  CUSTOM - Przemyslaw Stawczyk    */
         fdostream(fdostream&& other) : fdostream()
         {
             std::swap(buf, other.buf);
             rdbuf(&buf);
         }
+
         fdostream(const fdostream& other) : fdostream()
         {
             buf = other.buf;
@@ -108,6 +110,7 @@ namespace boost {
             rdbuf(&buf);
             return *this;
         }
+        /*  END_CUSTOM - Przemyslaw Stawczyk    */
     };
 
 

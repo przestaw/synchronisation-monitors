@@ -16,9 +16,9 @@ void do_work(int nr);
 std::atomic<bool> my_exit(false);
 Buffer buffers[3];
 int global;
+
 int main()
 {
-    std::cout << "Program uses fdstream.h lib by Nicolai M. Josuttis ~ modified by Przmyslaw Stawczyk\n\n";
 /*
  * We need to obtain 3 separate slave
  * terminals to see how simulation goes on
@@ -78,19 +78,23 @@ int main()
     });
     workers[1].join();
     */
+    auto input = []{
+        int a;
+        do{
+            std::cin.clear();
+            std::cin.sync();
+            std::cin >> a;
+        }while(std::cin.fail());
+        return a;
+    };
 
-    int input1, input2;
     while(my_exit == false)
     {
-        printf("Choose option:\n\n"
-               "\t1. Begin\n"
-               "\t2. Exit\n");
-        if(scanf("%d", &input1) != 1)
-        {
-            input1 = 0;
-        }
-        while(getc(stdin) != '\n');
-        switch (input1)
+        std::cout <<"Choose option:\n\n"
+                    <<"\t1. Begin\n"
+                    <<"\t2. Exit\n";
+
+        switch (input())
         {
             case 1 :
                 for(int i = 0; i < 3; i++)
@@ -99,19 +103,14 @@ int main()
                 }
                 while(!(my_exit.load()))
                 {
-                    printf("\tPress key: 1. to Exit\n");
-                    if(scanf("%d", &input2) != 1)
-                    {
-                        input2 = 0;
-                    }
-                    while(getc(stdin) != '\n');
-                    switch (input2)
+                    std::cout << "\tPress key: 1. to Exit\n";
+                    switch (input())
                     {
                         case 1:
                             my_exit = true;
-                            for(int i = 0; i < 3; i++)
+                            for(auto & it : workers)
                             {
-                                workers[i].join();
+                                it.join();
                             }
                             break;
                         default:
@@ -146,13 +145,13 @@ void do_work(int nr)
             }while(new_car.get_dest() == nr);
         }
 
-        current = buffers[nr-1].get_car(&new_car);
+        current = buffers[nr-1].get_car(&new_car, nr);
 
         if(current.get_dest() == nr)
         {
             current = Car_Type();
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(800 + rand()%400));
         if(current.is_car())
         {
             buffers[nr%3].put_car(current);
