@@ -1,6 +1,7 @@
 //
 // Created by przemek on 12/10/18.
 //
+#include <functional>
 
 #include "../include/buffer.h"
 #include "../include/terminal-stream.h"
