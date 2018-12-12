@@ -32,7 +32,9 @@ public:
 
     void put_car(Car_Type &next_car);
 
-    bool is_n_full();
+    bool is_empty() const;
+    bool is_full() const;
+    int get_size() const;
 };
 
 #endif //COCURRENT_BUFFER_H

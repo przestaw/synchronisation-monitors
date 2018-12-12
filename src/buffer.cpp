@@ -12,7 +12,6 @@ Buffer::Buffer() :begin(0), end(0), size(0), my_stream(get_ptmx())
     {
         it = Car_Type();
     }
-    //my_stream = get_ptmx_stream();
     my_stream << "Hello World : from slave ";
 }
 
@@ -52,7 +51,7 @@ Car_Type Buffer::get_car(Car_Type *approching)
             begin = (begin + 1)% BUF_SIZE; //+1
             my_stream << "       ";
             this->print();
-            my_stream << " -> [P]" << std::endl; //TODO : GONE
+            my_stream << " -> [P]" << std::endl;
             --size;
             buf_n_full.notify_one(); //last thing before return
         }
@@ -83,11 +82,11 @@ Car_Type Buffer::get_car(Car_Type *approching)
             this->print();
             if(car.is_prio())
             {
-                my_stream << " -> [P]" << std::endl; //TODO : GONE
+                my_stream << " -> [P]" << std::endl;
             }
             else
             {
-                my_stream << " -> [" << car.get_dest() << "]" << std::endl; //TODO : GONE
+                my_stream << " -> [" << car.get_dest() << "]" << std::endl;
             }
             --size;
             buf_n_full.notify_one(); //last thing before return
@@ -99,44 +98,6 @@ Car_Type Buffer::get_car(Car_Type *approching)
             my_stream << "       *none*" << std::endl;
         }
     }
-
-
-    /*
-    if(size == 0 || approching->is_prio())
-    {
-        car = *approching;
-        *approching = Car_Type();
-        my_stream << "       ";
-        this->print();
-        if(car.is_prio())
-        {
-            my_stream << " <:P:> *appeared*" << std::endl;
-        }
-        else
-        {
-            my_stream << "       *none*" << std::endl;
-        }
-    }else
-    {
-        car = car_buf[begin];
-        car_buf[begin] = Car_Type();
-
-        my_stream << "       ";
-        this->print();
-        if(car.is_prio())
-        {
-            my_stream << " -> [P]" << std::endl;
-        }
-        else
-        {
-            my_stream << " -> [" << car.get_dest() << "]" << std::endl;
-        }
-
-        begin = (begin + 1)% BUF_SIZE; //+1
-        --size;
-        buf_n_full.notify_one();
-    }
-     */
     return car;
 }
 
@@ -216,44 +177,6 @@ Car_Type Buffer::get_car(Car_Type *approching, int nr) //NOPRINT
             my_stream << "       *none*" << std::endl;
         }
     }
-
-
-    /*
-    if(size == 0 || approching->is_prio())
-    {
-        car = *approching;
-        *approching = Car_Type();
-        my_stream << "       ";
-        this->print();
-        if(car.is_prio())
-        {
-            my_stream << " <:P:> *appeared*" << std::endl;
-        }
-        else
-        {
-            my_stream << "       *none*" << std::endl;
-        }
-    }else
-    {
-        car = car_buf[begin];
-        car_buf[begin] = Car_Type();
-
-        my_stream << "       ";
-        this->print();
-        if(car.is_prio())
-        {
-            my_stream << " -> [P]" << std::endl;
-        }
-        else
-        {
-            my_stream << " -> [" << car.get_dest() << "]" << std::endl;
-        }
-
-        begin = (begin + 1)% BUF_SIZE; //+1
-        --size;
-        buf_n_full.notify_one();
-    }
-     */
     return car;
 }
 
@@ -261,7 +184,7 @@ void Buffer::put_car(Car_Type &next_car)
 {
     std::unique_lock<std::mutex> uniqueLock(my_mutex);
 
-    buf_n_full.wait(uniqueLock, std::bind(&Buffer::is_n_full, this));
+    buf_n_full.wait(uniqueLock, [this]{return (this->size < BUF_SIZE);});
 
     size = size + 1;
 
@@ -271,7 +194,8 @@ void Buffer::put_car(Car_Type &next_car)
         car_buf[begin] = next_car;
         my_stream << "[P]*-> ";
 
-    }else
+    }
+    else
     {
         car_buf[end] = next_car;
         end = (end + 1)% BUF_SIZE; //+1
@@ -307,7 +231,17 @@ void Buffer::print()
     my_stream << ": ";
 }
 
-bool Buffer::is_n_full()
+bool Buffer::is_empty() const
 {
-    return (size < BUF_SIZE);
+    return (size == 0);
+}
+
+bool Buffer::is_full() const
+{
+    return (size == BUF_SIZE);
+}
+
+int Buffer::get_size() const
+{
+    return size;
 }

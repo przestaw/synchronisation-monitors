@@ -15,7 +15,6 @@ void do_work(int nr);
 
 std::atomic<bool> my_exit(false);
 Buffer buffers[3];
-int global;
 
 int main()
 {
@@ -73,7 +72,6 @@ int main()
                 break;
         }
     }
-
     return 0;
 }
 

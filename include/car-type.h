@@ -5,6 +5,11 @@
 #ifndef COCURRENT_CAR_TYPE_H
 #define COCURRENT_CAR_TYPE_H
 
+#define CAR_P_1 5
+#define CAR_P_2 3
+#define CAR_PRIO_P 8
+#define CAR_DEST_NR 3
+
 class Car_Type{
 private:
     int prio;
